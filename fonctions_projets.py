@@ -105,3 +105,87 @@ def recherche_lexicographique(ens_vecteurs, MIN):
                 non_domine_index.append(actuel)
              
     return np.array(non_domine_index)
+
+
+#Q7:Programmation dynamique
+def image(ens_vecteurs,ens_index):
+
+    for i in range(ens_index.shape[0]):
+        t = np.where(ens_index[i,:]==1)
+        if(i==0):
+            
+            print(ens_vecteurs[t])
+            images = np.sum(ens_vecteurs[t], axis=0)
+        else:
+            images = np.vstack((images,np.sum(ens_vecteurs[t], axis=0)))
+
+    return images
+    
+def prog_dynamique(ens_vecteurs,k,MIN):
+    #on voudrais creer un tableau qui permet de realiser le programmation dynamique
+    #une case(i,j) represnete des sous-ensemble pareto-optimal de taille i dans {1..j}
+    N = ens_vecteurs.shape[0]
+    D = ens_vecteurs.shape[1]
+    dym = np.zeros((k+1,N))
+    #une list imbriquee
+    list_index=[[]]*((k+1)*N)
+    #initialisation:
+    for i in range(N):
+        #choisir 0 objets parmi ensemble de taille i
+        list_index[i]=np.zeros(N)
+        
+    print("init", list_index)
+    
+    for i in range(1,k+1):
+        for j in range(N):
+            print(i,j)
+            if((i==1) and (j==0)):
+                init=np.zeros(N)
+                init[0]=1
+                list_index[N]=init
+            else:   
+                if(i-1==j):
+                    index = np.zeros(N)
+                    #choisir j objets dans j objets, la seule solution est de tout prendre
+                    index[0:i]=1
+                    list_index[i*N+j]=index
+                if(i-1>j):
+                    list_index[i*N+j]=np.zeros(N)
+                    print("impossible")
+                if(i-1<j):
+                    #if i-1<j, alors F et G exsite
+                    #si on prend pas j
+                    indexG = list_index[i*N+(j-1)]
+                    
+                    #si on prend j
+                    indexF = list_index[(i-1)*N+(j-1)]
+                    print(indexG,indexF)
+                        
+                    indexG=np.array(indexG).reshape(-1,N)
+                    indexF=np.array(indexF).reshape(-1,N)
+                    
+                    print(indexF.shape)
+                    
+                    indexF[:,j]=1
+                    
+                    print("G",i,j-1,indexG)
+                    print("F",i-1,j-1,indexF)
+                    
+                    #compare all the possibilities
+                    ens_index = np.vstack((indexG,indexF))
+                    
+                    print("ens_index",ens_index)
+                    print("shape",ens_index.shape)
+                    
+                    ens_images=image(ens_vecteurs,ens_index)
+                    
+                    print("images",ens_images)
+                    
+                    index_opt = recherche_lexicographique(ens_images,True)
+                    
+                    #mettre a jour cette case
+                    list_index[i*N+j] = ens_index[index_opt]
+    
+    result = np.array(list_index[-1])
+                                      
+    return result
