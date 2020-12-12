@@ -114,7 +114,7 @@ def image(ens_vecteurs,ens_index):
         t = np.where(ens_index[i,:]==1)
         if(i==0):
             
-            print(ens_vecteurs[t])
+            #print(ens_vecteurs[t])
             images = np.sum(ens_vecteurs[t], axis=0)
         else:
             images = np.vstack((images,np.sum(ens_vecteurs[t], axis=0)))
@@ -134,11 +134,11 @@ def prog_dynamique(ens_vecteurs,k,MIN):
         #choisir 0 objets parmi ensemble de taille i
         list_index[i]=np.zeros(N)
         
-    print("init", list_index)
+    #print("init", list_index)
     
     for i in range(1,k+1):
         for j in range(N):
-            print(i,j)
+           #print(i,j)
             if((i==1) and (j==0)):
                 init=np.zeros(N)
                 init[0]=1
@@ -151,7 +151,7 @@ def prog_dynamique(ens_vecteurs,k,MIN):
                     list_index[i*N+j]=index
                 if(i-1>j):
                     list_index[i*N+j]=np.zeros(N)
-                    print("impossible")
+                    #print("impossible")
                 if(i-1<j):
                     #if i-1<j, alors F et G exsite
                     #si on prend pas j
@@ -159,27 +159,27 @@ def prog_dynamique(ens_vecteurs,k,MIN):
                     
                     #si on prend j
                     indexF = list_index[(i-1)*N+(j-1)]
-                    print(indexG,indexF)
+                    #print(indexG,indexF)
                         
                     indexG=np.array(indexG).reshape(-1,N)
                     indexF=np.array(indexF).reshape(-1,N)
                     
-                    print(indexF.shape)
+                    #print(indexF.shape)
                     
                     indexF[:,j]=1
                     
-                    print("G",i,j-1,indexG)
-                    print("F",i-1,j-1,indexF)
+                    #print("G",i,j-1,indexG)
+                    #print("F",i-1,j-1,indexF)
                     
                     #compare all the possibilities
                     ens_index = np.vstack((indexG,indexF))
                     
-                    print("ens_index",ens_index)
-                    print("shape",ens_index.shape)
+                    #print("ens_index",ens_index)
+                    #print("shape",ens_index.shape)
                     
                     ens_images=image(ens_vecteurs,ens_index)
                     
-                    print("images",ens_images)
+                    #print("images",ens_images)
                     
                     index_opt = recherche_lexicographique(ens_images,True)
                     
@@ -189,3 +189,23 @@ def prog_dynamique(ens_vecteurs,k,MIN):
     result = np.array(list_index[-1])
                                       
     return result
+
+
+def minimax_deux_temps(ens_vecteurs,k,alpha_min,alpha_max,MIN):
+    #return les points minimax en choisissant k objets parmi un ensemble des vecteurs
+    ens_index = prog_dynamique(ens_vecteurs,k,MIN)
+    ens_pareto = image(ens_vecteurs,ens_index)
+    points_minimax = []
+    for p in ens_pareto:
+        if(p[0]<p[1]):
+            #y1<y2, alpha_min maximise FI
+            points_minimax.append(p[0]*alpha_min+p[1]*(1-alpha_min))
+        else:
+            if(p[0]>p[1]):
+                #y1>y2, alpha_max maximise FI
+                points_minimax.append(p[0]*alpha_max+p[1]*(1-alpha_max))
+            else:
+                points_minimax.append(p[0]+p[1])
+    index_point_minimax = np.argmin(np.array(points_minimax))
+    
+    return ens_pareto[index_point_minimax,:], ens_index[index_point_minimax,:]
