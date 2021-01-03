@@ -18,7 +18,7 @@ def vecteur_alea(n,m):
 	vect=np.hstack((c1,c2))
 	return vect
 
-
+'''
 def compare2(a,b,MIN):
     if(MIN):
         #need check the fonction np.all
@@ -29,7 +29,7 @@ def compare2(a,b,MIN):
         else:
             result='incomparable'
     return result 
-
+   '''
 def compare(a,b,MIN):
 	result = False
 	if(MIN):
@@ -56,13 +56,13 @@ def tri_lexicographique(ens_vecteurs):
 def recherche_exhaustif(ens_vecteurs,MIN):
 	res = []
 	for i in range(len(ens_vecteurs)):
+		state = False
 		for j in range(len(ens_vecteurs)):
 			if compare(ens_vecteurs[i,:],ens_vecteurs[j,:],MIN):
 				state = True
-
 		if state == False:
 			res.append(i)
-	return res
+	return np.array(res)
 
 def recherche_lexicographique(ens_vecteurs, MIN):
 	ordre_lex = tri_lexicographique(ens_vecteurs)
@@ -76,9 +76,9 @@ def recherche_lexicographique(ens_vecteurs, MIN):
 			actuel = ordre_lex[l]
 			a = np.array(ens_vecteurs[dernier,:])
 			b = np.array(ens_vecteurs[actuel,:])
-			domine = compare2(a,b,True)
-			if(domine == 'incomparable'):
-			# if not domine:
+			domine = compare(b,a,True)
+			#if(domine == 'incomparable'):
+			if not domine:
 				non_domine_index.append(actuel)
 
 	return np.array(non_domine_index)
@@ -96,7 +96,7 @@ def image(ens_vecteurs,ens_index):
 		else:
 			images = np.vstack((images,np.sum(ens_vecteurs[t], axis=0)))
 
-	return images
+	return images.reshape((-1,2))
 
 
 def prog_dynamique(ens_vecteurs,k,MIN):
@@ -112,11 +112,11 @@ def prog_dynamique(ens_vecteurs,k,MIN):
         #choisir 0 objets parmi ensemble de taille i
         list_index[i]=np.zeros(N)
         
-    print("init", list_index)
+   # print("init", list_index)
     
     for i in range(1,k+1):
         for j in range(N):
-            print(i,j)
+            #print(i,j)
             if((i==1) and (j==0)):
                 init=np.zeros(N)
                 init[0]=1
@@ -129,7 +129,7 @@ def prog_dynamique(ens_vecteurs,k,MIN):
                     list_index[i*N+j]=index
                 if(i-1>j):
                     list_index[i*N+j]=np.zeros(N)
-                    print("impossible")
+                    #print("impossible")
                 if(i-1<j):
                     #if i-1<j, alors F et G exsite
                     #si on prend pas j
@@ -137,27 +137,27 @@ def prog_dynamique(ens_vecteurs,k,MIN):
                     
                     #si on prend j
                     indexF = list_index[(i-1)*N+(j-1)]
-                    print(indexG,indexF)
+                    #print(indexG,indexF)
                         
                     indexG=np.array(indexG).reshape(-1,N)
                     indexF=np.array(indexF).reshape(-1,N)
                     
-                    print(indexF.shape)
+                    #print(indexF.shape)
                     
                     indexF[:,j]=1
                     
-                    print("G",i,j-1,indexG)
-                    print("F",i-1,j-1,indexF)
+                    #print("G",i,j-1,indexG)
+                    #print("F",i-1,j-1,indexF)
                     
                     #compare all the possibilities
                     ens_index = np.vstack((indexG,indexF))
                     
-                    print("ens_index",ens_index)
-                    print("shape",ens_index.shape)
+                    #print("ens_index",ens_index)
+                    #print("shape",ens_index.shape)
                     
                     ens_images=image(ens_vecteurs,ens_index)
                     
-                    print("images",ens_images)
+                    #print("images",ens_images)
                     
                     index_opt = recherche_lexicographique(ens_images,True)
                     
@@ -167,3 +167,56 @@ def prog_dynamique(ens_vecteurs,k,MIN):
     result = np.array(list_index[-1])
                                       
     return result
+
+
+
+def minimax_deux_temps(ens_vecteurs,k,alpha_min,alpha_max,MIN=True):
+    #return les points minimax en choisissant k objets parmi un ensemble des vecteurs
+    ens_index = prog_dynamique(ens_vecteurs,k,MIN)
+    ens_pareto = image(ens_vecteurs,ens_index)
+    points_minimax = []
+    for p in ens_pareto:
+        if(p[0]<p[1]):
+            #y1<y2, alpha_min maximise FI
+            points_minimax.append(p[0]*alpha_min+p[1]*(1-alpha_min))
+        else:
+            if(p[0]>p[1]):
+                #y1>y2, alpha_max maximise FI
+                points_minimax.append(p[0]*alpha_max+p[1]*(1-alpha_max))
+            else:
+                points_minimax.append(p[0]+p[1])
+    minimax = np.min(np.array(points_minimax))
+    index_point_minimax = np.where(np.array(points_minimax)==minimax)
+    
+    return ens_pareto[index_point_minimax,:], ens_index[index_point_minimax,:]
+
+def transform(ens_vect,alpha_min,alpha_max):
+    nb_vect,dim = ens_vect.shape
+    ens_trans = np.zeros((nb_vect,dim))
+    for i in range(nb_vect):
+        x,y = ens_vect[i,:]
+        x_trans = alpha_min*x+(1-alpha_min)*y
+        y_trans = alpha_max*x+(1-alpha_max)*y
+        ens_trans[i,:]= np.array([x_trans,y_trans])
+    return ens_trans
+
+
+def minimax_I_dominance(ens_vect,k,alpha_min,alpha_max,MIN=True):
+    ens_trans = transform(ens_vect,alpha_min,alpha_max)
+    index = prog_dynamique(ens_trans,k,MIN)
+    images = image(ens_trans,index)
+    images_real = image(ens_vect,index)
+    points_minimax =[]
+    #print(images.shape)
+    for i in range(images.shape[0]):
+        #print(images[i,:])
+        y1,y2 = images_real[i,:]
+        if y1<=y2:
+            points_minimax.append(images[i,0])
+        else:
+            points_minimax.append(images[i,1])
+
+
+    minimax = np.min(np.array(points_minimax))
+    index_point_minimax = np.where(np.array(points_minimax)==minimax)
+    return images_real[index_point_minimax,:], index[index_point_minimax,:]
