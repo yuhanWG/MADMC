@@ -1,10 +1,12 @@
 # Projet MADMC-M2-Androide
 ### Sélection bi-objectif avec coefficients intervalles
 
-Ce projet étudie deux différentes procédures pour trouver le point minimax parmi un ensemble des objets valué par bi-objectifs(minimiser) et compare leur efficacité. On implémente aussi les algorithmes naif et lexicographique pour trouver les points non-dominés au sens de Pareto. Les deux procédures sont des suivantes:
+Ce projet étudie deux différentes procédures pour trouver le point minimax parmi un ensemble des objets valué par bi-objectifs(minimiser) et compare leur efficacité. On implémente aussi les algorithmes naif et lexicographique pour trouver les points non-dominés au sens de Pareto. Les deux procédures sont des suivantes:  
+
 Procédure1
 - déterminer les points non dominés par programmation dynamique
-- déterminer un point minimax parmi ceux-ci
+- déterminer un point minimax parmi ceux-ci  
+
 Procédure2
 - déterminer les points non I-dominés
 - déterminer un point minimax parmi ceux-ci
