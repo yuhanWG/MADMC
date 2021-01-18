@@ -18,8 +18,12 @@ Python(numpy, matplotlib)
 ### Installation
 Télécharger le dossier, les fichiers dedans sont exécutables, correspondent à de différentes expérimentations.
 
+### Contenu
+- fonctions.py: y compris toutes les fonctions nécessaires pour ce projet 
+- fichiers jupyternotebook: expéimentations faites dans le projet
+
 ### Démarrage
-Générer un ensemble des solutions aléatoirement
+Dans les codes suivants, on va d'abord générer un ensemble des solutions aléatoirement de taille 4, et puis on déterminer les solutions non dominées par l'algorithme naif et l'algorithme lexicographique, ensuite on calcul des solutions minimax en utilisant les deux procédures décrites ci-dessus. Les codes complètes sont dans test_fonctions2.ipynb 
 ```Python
 import numpy as np
 from fonctions_projet import *
