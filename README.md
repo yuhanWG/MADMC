@@ -18,11 +18,15 @@ Python(numpy, matplotlib)
 Télécharger le dossier, les fichiers dedans sont exécutables, correspondent à de différentes expérimentations.
 
 ### Contenu
+- images: les images produites par les algorithmes
 - fonctions.py: y compris toutes les fonctions nécessaires pour ce projet 
-- fichiers jupyternotebook: expéimentations faites dans le projet
+- Q5-experimentation1.ipynb: expéimentations de question5
+- Q12-experimentation2.ipynb: expérimentation de question12
+- rapport.pdf
+- test1.py: comparer les complexités des algoritghmes naifs et lexicographiques, traçer les courbes des temps d'exécutions respectifs
 
-### Démarrage
-Dans les codes suivants, on va d'abord générer un ensemble des solutions aléatoirement de taille 4, et puis on déterminer les solutions non dominées par l'algorithme naif et l'algorithme lexicographique, ensuite on calcul des solutions minimax en utilisant les deux procédures décrites ci-dessus. Les codes complètes sont dans test_fonctions2.ipynb 
+### Exemple1
+Dans l'exemple, on va d'abord générer un ensemble des solutions aléatoirement de taille 4, et puis on déterminer les solutions non dominées au sens Pareto par l'algorithme naif et l'algorithme lexicographique, ensuite on calcule des solutions minimax en utilisant les deux procédures décrites. Les codes complètes sont dans test_fonctions2.ipynb 
 ```Python
 import numpy as np
 from fonctions_projet import *
@@ -48,13 +52,11 @@ array([0,2]) # index des solutions non dominees
 ```
 algorithme lexicographique:
 ```Python
-tri_lexicographique(ens) #tri lexicographique
 recherche_lexicographique(ens_vecteur, MIN=True) #recherche lexicographique
 
 ```
 output:
 ```Python
-array[(0,3,1,2)]
 array[(0,2)] # index des solutions non dominees
 ```
 Procedure1: déterminer une solution minimax en qui contient 1 objet
@@ -71,6 +73,21 @@ output:
  10.14, # fI(y)
  array([[[0., 0., 1., 0.]]])) #vecteur x ou 1 represente l'objet est choisi,0 sinon
 ```
+### Exemple2-expérimentation1
+Exécuter le fichier test1.py directement dans un terminal, en lui passant les paramètres nécessaires pour simuler l'expérimentation de la question5. Les courbes des temps sont affichées. Ici on prend un exemple: le nombre de vecteurs varie de 200 à N=400 par pas de step=50, pour chaque valeur on fera une moyenne du temps sur 20 ensembles tirés.
+```Python
+# Python test1.py N step nb_trial
+Python test1.py 400 50 1
+```
+![Les courbes de résolution](https://github.com/yuhanWG/MADMC/blob/master/images/Figure_1.png)
+
+### Exemple3-expérimentation2
+Exécuter test2.py dans un terminal, en lui passant les paramètres la première et la seconde procédure de résolution, en faisant varier espilon de 0.025 à 0.5 par step=0.0.25, pour chaque intervalle, on fera une moyenne du temps d'exécution nb_trial=50.
+```Python
+# Python test2.py step nb_trial
+Python test1.py 0.025 50
+```
+![](https://github.com/yuhanWG/MADMC/blob/master/images/Q12.png)
 
 
 
