@@ -24,6 +24,7 @@ Télécharger le dossier, les fichiers dedans sont exécutables, correspondent �
 - Q12-experimentation2.ipynb: expérimentation de question12
 - rapport.pdf
 - test1.py: comparer les complexités des algoritghmes naifs et lexicographiques, traçer les courbes des temps d'exécutions respectifs
+- test2.py: comparer les deux procédures de résolution en fonction de xmin et xmax
 
 ### Exemple1
 Dans l'exemple, on va d'abord générer un ensemble des solutions aléatoirement de taille 4, et puis on déterminer les solutions non dominées au sens Pareto par l'algorithme naif et l'algorithme lexicographique, ensuite on calcule des solutions minimax en utilisant les deux procédures décrites. Les codes complètes sont dans test_fonctions2.ipynb 
@@ -85,7 +86,7 @@ Python test1.py 400 50 1
 Exécuter test2.py dans un terminal, en lui passant les paramètres la première et la seconde procédure de résolution, en faisant varier espilon de 0.025 à 0.5 par step=0.0.25, pour chaque intervalle, on fera une moyenne du temps d'exécution nb_trial=50.
 ```Python
 # Python test2.py step nb_trial
-Python test1.py 0.025 50
+Python test2.py 0.025 50
 ```
 ![](https://github.com/yuhanWG/MADMC/blob/master/images/Q12.png)
 
